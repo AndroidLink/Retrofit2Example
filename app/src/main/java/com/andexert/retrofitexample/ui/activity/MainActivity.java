@@ -24,9 +24,9 @@ import java.text.SimpleDateFormat;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class MainActivity extends Activity {
@@ -71,43 +71,54 @@ public class MainActivity extends Activity {
         if (!searchEditText.getText().toString().equals(""))
         {
             String appid = ApiConstant.APP_ID;
-            App.getRestClient().getWeatherService().getWeather(searchEditText.getText().toString(), appid, new Callback<ApiResponse>() {
+            Call<ApiResponse> call = App.getRestClient().getWeatherService().getWeather(searchEditText.getText().toString(), appid);
+            call.enqueue(new Callback<ApiResponse>() {
                 @Override
-                public void success(ApiResponse apiResponse, Response response)
-                {
-                    final Date sunriseDate = new Date(apiResponse.getSys().getSunriseTime() * 1000);
-                    final Date sunsetDate = new Date(apiResponse.getSys().getSunsetTime() * 1000);
-                    final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh':'mm':'ss a");
-
-                    getActionBar().setTitle(apiResponse.getStrCityName());
-                    countryTextView.setText(apiResponse.getSys().getStrCountry());
-
-                    if (!apiResponse.getWeather().isEmpty())
-                    {
-                        Picasso.with(MainActivity.this).load("http://openweathermap.org/img/w/" + apiResponse.getWeather().get(0).getStrIconName() + ".png").into(iconImageView);
-                        weatherTextView.setText(apiResponse.getWeather().get(0).getStrDesc());
+                public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                    if (response.isSuccessful()) {
+                        handleResponse(response.body());
+                    } else {
+                        handleFailure(response.code() + response.message());
                     }
-
-                    sunsetTextView.setText(simpleDateFormat.format(sunsetDate));
-                    sunriseTextView.setText(simpleDateFormat.format(sunriseDate));
-
-                    searchEditText.setText("");
-                    Log.e(TAG, "City name : " + apiResponse.getStrCityName());
-                    dataLayout.setVisibility(View.VISIBLE);
-                    weatherLayout.setVisibility(View.VISIBLE);
                 }
 
                 @Override
-                public void failure(RetrofitError error)
-                {
-                    Log.e(TAG, "Error : " + error.getMessage());
-                    searchEditText.setText("");
-                    Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
-                    dataLayout.setVisibility(View.GONE);
-                    weatherLayout.setVisibility(View.GONE);
+                public void onFailure(Call<ApiResponse> call, Throwable t) {
+                    handleFailure(t.getMessage());
                 }
             });
         }
+    }
+
+    private void handleResponse(ApiResponse apiResponse) {
+        final Date sunriseDate = new Date(apiResponse.getSys().getSunriseTime() * 1000);
+        final Date sunsetDate = new Date(apiResponse.getSys().getSunsetTime() * 1000);
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh':'mm':'ss a");
+
+        getActionBar().setTitle(apiResponse.getStrCityName());
+        countryTextView.setText(apiResponse.getSys().getStrCountry());
+
+        if (!apiResponse.getWeather().isEmpty())
+        {
+            Picasso.with(MainActivity.this).load("http://openweathermap.org/img/w/" + apiResponse.getWeather().get(0).getStrIconName() + ".png").into(iconImageView);
+            weatherTextView.setText(apiResponse.getWeather().get(0).getStrDesc());
+        }
+
+        sunsetTextView.setText(simpleDateFormat.format(sunsetDate));
+        sunriseTextView.setText(simpleDateFormat.format(sunriseDate));
+
+        searchEditText.setText("");
+        Log.e(TAG, "City name : " + apiResponse.getStrCityName());
+        dataLayout.setVisibility(View.VISIBLE);
+        weatherLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void handleFailure(String message) {
+        Log.e(TAG, "Error : " + message);
+        searchEditText.setText("");
+        Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+        dataLayout.setVisibility(View.GONE);
+        weatherLayout.setVisibility(View.GONE);
     }
 
     @Override

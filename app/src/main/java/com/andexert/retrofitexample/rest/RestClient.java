@@ -1,11 +1,14 @@
 package com.andexert.retrofitexample.rest;
 
+import com.andexert.retrofitexample.BuildConfig;
 import com.andexert.retrofitexample.rest.service.WeatherService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import retrofit.RestAdapter;
-import retrofit.converter.GsonConverter;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Author :    Chutaux Robin
@@ -22,13 +25,43 @@ public class RestClient
             .registerTypeAdapterFactory(new ItemTypeAdapterFactory())
             .create();
 
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setLogLevel(RestAdapter.LogLevel.FULL)
-                .setEndpoint(BASE_URL)
-                .setConverter(new GsonConverter(gson))
+        Retrofit.Builder retrofitBuilder
+                = new Retrofit.Builder()
+//                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson));
+
+        OkHttpClient defaultOkHttpClient
+                = new OkHttpClient.Builder()
+//                .cache(getCache())
                 .build();
 
-        apiService = restAdapter.create(WeatherService.class);
+        OkHttpClient.Builder okHttpClientBuilder = defaultOkHttpClient.newBuilder();
+
+        // todo: wrap all common param within a interceptor rather than spreading
+        // all over every api methods.
+//        if(networkInterceptor != null){
+//            okHttpClientBuilder.addNetworkInterceptor(networkInterceptor);
+//        }
+
+        OkHttpClient modifiedOkHttpClient = okHttpClientBuilder
+                .addInterceptor(getHttpLoggingInterceptor())
+                .build();
+
+        retrofitBuilder.client(modifiedOkHttpClient);
+        retrofitBuilder.baseUrl(BASE_URL);
+
+        Retrofit retrofit = retrofitBuilder.build();
+        apiService = retrofit.create(WeatherService.class);
+    }
+
+    private static HttpLoggingInterceptor getHttpLoggingInterceptor(){
+        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
+        if (BuildConfig.DEBUG) {
+            httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        } else {
+            httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
+        }
+        return httpLoggingInterceptor;
     }
 
     public WeatherService getWeatherService()

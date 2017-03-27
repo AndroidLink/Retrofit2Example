@@ -1,4 +1,115 @@
-# Upgrade v1 - update for use retrofit 1.x
+# Upgrade v2.2 - update with rxjava2
+===============
+
+# Upgrade v2.1 - common request parameters in interceptor
+===============
+
+# Upgrade v2.0 - retrofit upgrade to 2.x
+===============
+#### define constants for the version of libraries in root build.gradle
+    ext {
+      ......
+    }
+
+#### app/build.gradle from
+    compile 'com.squareup.retrofit:retrofit:1.6.1'
+
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor "com.jakewharton:butterknife-compiler:8.5.1"
+
+    compile 'com.squareup.picasso:picasso:2.5.2'
+
+    compile 'org.parceler:parceler-api:1.1.6'
+    annotationProcessor 'org.parceler:parceler:1.1.6'
+#### to
+    compile "com.squareup.retrofit2:retrofit:$rootProject.retrofit2Version"
+    compile "com.squareup.retrofit2:converter-gson:$rootProject.retrofit2Version"
+    compile "com.squareup.okhttp3:okhttp:$rootProject.okhttp3Version"
+    compile "com.squareup.okhttp3:logging-interceptor:$rootProject.okhttp3Version"
+
+    compile "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterknifeVersion"
+
+    compile "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+    compile "org.parceler:parceler-api:$rootProject.parcelerVersion"
+
+    annotationProcessor "org.parceler:parceler:$rootProject.parcelerVersion"
+
+#### in WeatherService.java from
+    void getWeather(@Query("q") String strCity, @Query("appid") String appid, Callback<ApiResponse> callback);
+#### to
+    Call<ApiResponse> getWeather(@Query("q") String strCity, @Query("appid") String appid);
+
+#### in RestClient.java from
+    RestAdapter restAdapter = new RestAdapter.Builder()
+            .setLogLevel(RestAdapter.LogLevel.FULL)
+            .setEndpoint(BASE_URL)
+            .setConverter(new GsonConverter(gson))
+            .build();
+
+    apiService = restAdapter.create(WeatherService.class);
+#### to
+    Retrofit.Builder retrofitBuilder
+            = new Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create(gson));
+
+    OkHttpClient defaultOkHttpClient
+            = new OkHttpClient.Builder()
+            .build();
+
+    OkHttpClient.Builder okHttpClientBuilder = defaultOkHttpClient.newBuilder();
+
+    // todo: wrap all common param within a interceptor rather than spreading
+    // all over every api methods.
+    //        if(networkInterceptor != null){
+    //            okHttpClientBuilder.addNetworkInterceptor(networkInterceptor);
+    //        }
+
+    OkHttpClient modifiedOkHttpClient = okHttpClientBuilder
+            .addInterceptor(getHttpLoggingInterceptor())
+            .build();
+
+    retrofitBuilder.client(modifiedOkHttpClient);
+    retrofitBuilder.baseUrl(BASE_URL);
+
+    Retrofit retrofit = retrofitBuilder.build();
+    apiService = retrofit.create(WeatherService.class);
+
+#### in MainActivity.java from
+    String appid = ApiConstant.APP_ID;
+    App.getRestClient().getWeatherService().getWeather(searchEditText.getText().toString(), appid, new Callback<ApiResponse>() {
+        @Override
+        public void success(ApiResponse apiResponse, Response response)
+        {
+            handleResponse(apiResponse);
+        }
+
+        @Override
+        public void failure(RetrofitError error)
+        {
+            handleFailure(error.getMessage());
+        }
+    });
+#### to
+    String appid = ApiConstant.APP_ID;
+    Call<ApiResponse> call = App.getRestClient().getWeatherService().getWeather(searchEditText.getText().toString(), appid);
+    call.enqueue(new Callback<ApiResponse>() {
+        @Override
+        public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+            if (response.isSuccessful()) {
+                handleResponse(response.body());
+            } else {
+                handleFailure(response.code() + response.message());
+            }
+        }
+
+        @Override
+        public void onFailure(Call<ApiResponse> call, Throwable t) {
+            handleFailure(t.getMessage());
+        }
+    });
+
+# Upgrade v1.0 - update for use retrofit 1.x
 ===============
 
 ## 1. Android Studio, in root build.gradle

@@ -2,9 +2,10 @@ package com.andexert.retrofitexample.rest.service;
 
 import com.andexert.retrofitexample.rest.model.ApiResponse;
 
-import retrofit.Callback;
-import retrofit.http.GET;
-import retrofit.http.Query;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
+
 
 /**
  * Author :    Chutaux Robin
@@ -14,5 +15,5 @@ import retrofit.http.Query;
  */
 public interface WeatherService {
     @GET("/data/2.5/weather")
-    void getWeather(@Query("q") String strCity, @Query("appid") String appid, Callback<ApiResponse> callback);
+    Call<ApiResponse> getWeather(@Query("q") String strCity, @Query("appid") String appid);
 }
