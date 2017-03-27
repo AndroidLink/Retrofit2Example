@@ -10,22 +10,20 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.andexert.retrofitexample.R;
 import com.andexert.retrofitexample.app.App;
 import com.andexert.retrofitexample.rest.model.ApiResponse;
+import com.andexert.retrofitexample.rest.service.ApiConstant;
 import com.squareup.picasso.Picasso;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.util.SimpleTimeZone;
-import java.util.TimeZone;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -34,35 +32,35 @@ import retrofit.client.Response;
 public class MainActivity extends Activity {
     private final static String TAG = MainActivity.class.getSimpleName();
 
-    @InjectView(R.id.activity_main_data)
+    @BindView(R.id.activity_main_data)
     protected RelativeLayout dataLayout;
 
-    @InjectView(R.id.activity_main_weather)
+    @BindView(R.id.activity_main_weather)
     protected RelativeLayout weatherLayout;
 
-    @InjectView(R.id.activity_main_search)
+    @BindView(R.id.activity_main_search)
     protected EditText searchEditText;
 
-    @InjectView(R.id.activity_main_sys_country_value)
+    @BindView(R.id.activity_main_sys_country_value)
     protected TextView countryTextView;
 
-    @InjectView(R.id.activity_main_sys_sunrise_value)
+    @BindView(R.id.activity_main_sys_sunrise_value)
     protected TextView sunriseTextView;
 
-    @InjectView(R.id.activity_main_sys_sunset_value)
+    @BindView(R.id.activity_main_sys_sunset_value)
     protected TextView sunsetTextView;
 
-    @InjectView(R.id.activity_main_weather_icon)
+    @BindView(R.id.activity_main_weather_icon)
     protected ImageView iconImageView;
 
-    @InjectView(R.id.activity_main_weather_text)
+    @BindView(R.id.activity_main_weather_text)
     protected TextView weatherTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
 
     }
@@ -72,8 +70,8 @@ public class MainActivity extends Activity {
     {
         if (!searchEditText.getText().toString().equals(""))
         {
-            App.getRestClient().getWeatherService().getWeather(searchEditText.getText().toString(), new Callback<ApiResponse>()
-            {
+            String appid = ApiConstant.APP_ID;
+            App.getRestClient().getWeatherService().getWeather(searchEditText.getText().toString(), appid, new Callback<ApiResponse>() {
                 @Override
                 public void success(ApiResponse apiResponse, Response response)
                 {
@@ -104,7 +102,7 @@ public class MainActivity extends Activity {
                 {
                     Log.e(TAG, "Error : " + error.getMessage());
                     searchEditText.setText("");
-                    Crouton.makeText(MainActivity.this, error.getMessage(), Style.ALERT).show();
+                    Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
                     dataLayout.setVisibility(View.GONE);
                     weatherLayout.setVisibility(View.GONE);
                 }

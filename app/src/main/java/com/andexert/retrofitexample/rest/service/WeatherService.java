@@ -13,5 +13,5 @@ import retrofit.http.Query;
 public interface WeatherService
 {
     @GET("/data/2.5/weather")
-    public void getWeather(@Query("q") String strCity, Callback<ApiResponse> callback);
+    void getWeather(@Query("q") String strCity, @Query("appid") String appid, Callback<ApiResponse> callback);
 }
