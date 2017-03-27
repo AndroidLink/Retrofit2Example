@@ -9,9 +9,10 @@ import retrofit.http.Query;
 /**
  * Author :    Chutaux Robin
  * Date :      10/2/2014
+ *
+ * Modifier:
  */
-public interface WeatherService
-{
+public interface WeatherService {
     @GET("/data/2.5/weather")
     void getWeather(@Query("q") String strCity, @Query("appid") String appid, Callback<ApiResponse> callback);
 }
