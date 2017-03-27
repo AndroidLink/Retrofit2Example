@@ -8,8 +8,8 @@ android {
         applicationId "com.andexert.retrofitexample"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 10
-        versionName "v2.0"
+        versionCode 11
+        versionName "v2.1"
     }
     buildTypes {
         release {

@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.andexert.retrofitexample.R;
 import com.andexert.retrofitexample.app.App;
 import com.andexert.retrofitexample.rest.model.ApiResponse;
-import com.andexert.retrofitexample.rest.service.ApiConstant;
 import com.squareup.picasso.Picasso;
 
 import java.sql.Date;
@@ -70,8 +69,7 @@ public class MainActivity extends Activity {
     {
         if (!searchEditText.getText().toString().equals(""))
         {
-            String appid = ApiConstant.APP_ID;
-            Call<ApiResponse> call = App.getRestClient().getWeatherService().getWeather(searchEditText.getText().toString(), appid);
+            Call<ApiResponse> call = App.getRestClient().getWeatherService().getWeather(searchEditText.getText().toString());
             call.enqueue(new Callback<ApiResponse>() {
                 @Override
                 public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {

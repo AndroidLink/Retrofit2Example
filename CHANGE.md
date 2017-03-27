@@ -3,6 +3,42 @@
 
 # Upgrade v2.1 - common request parameters in interceptor
 ===============
+#### add AuthorizedNetworkInterceptor.java implement okhttp3.Interceptor
+    public class AuthorizedNetworkInterceptor implements Interceptor {
+    @Override
+    public Response intercept(Chain chain) throws IOException {
+      if (chain != null) {
+          Request originalRequest = chain.request();
+          HttpUrl originalHttpUrl = originalRequest.url();
+          HttpUrl.Builder httpUrlBuilder = originalHttpUrl.newBuilder();
+
+          httpUrlBuilder.addQueryParameter(ApiConstant.APP_KEY, ApiConstant.APP_ID);
+
+          HttpUrl httpUrl = httpUrlBuilder.build();
+          Request.Builder requestBuilder = originalRequest.newBuilder()
+                  .url(httpUrl);
+          Request modifiedRequest = requestBuilder.build();
+
+          return chain.proceed(modifiedRequest);
+      }
+
+      return null;
+      }
+    }
+
+#### RestClient.java add networking interceptor to okhttp3 Builder
+    okHttpClientBuilder.addNetworkInterceptor(new AuthorizedNetworkInterceptor());
+
+#### WeatherService.java update api query, remove "appid" from
+    Call<ApiResponse> getWeather(@Query("q") String strCity, @Query("appid") String appid);
+#### to
+    Call<ApiResponse> getWeather(@Query("q") String strCity);
+
+#### MainActivity.java query without "appid" value from
+    String appid = ApiConstant.APP_ID;
+    Call<ApiResponse> call = App.getRestClient().getWeatherService().getWeather(searchEditText.getText().toString(), appid);
+#### to
+    Call<ApiResponse> call = App.getRestClient().getWeatherService().getWeather(searchEditText.getText().toString());
 
 # Upgrade v2.0 - retrofit upgrade to 2.x
 ===============

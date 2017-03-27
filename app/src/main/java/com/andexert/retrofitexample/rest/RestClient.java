@@ -1,6 +1,7 @@
 package com.andexert.retrofitexample.rest;
 
 import com.andexert.retrofitexample.BuildConfig;
+import com.andexert.retrofitexample.rest.service.AuthorizedNetworkInterceptor;
 import com.andexert.retrofitexample.rest.service.WeatherService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -42,6 +43,7 @@ public class RestClient
 //        if(networkInterceptor != null){
 //            okHttpClientBuilder.addNetworkInterceptor(networkInterceptor);
 //        }
+        okHttpClientBuilder.addNetworkInterceptor(new AuthorizedNetworkInterceptor());
 
         OkHttpClient modifiedOkHttpClient = okHttpClientBuilder
                 .addInterceptor(getHttpLoggingInterceptor())
