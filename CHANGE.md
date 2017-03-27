@@ -1,5 +1,57 @@
 # Upgrade v2.2 - update with rxjava2
 ===============
+#### app/build.gradle from
+    compile "com.squareup.retrofit2:adapter-rxjava:$rootProject.retrofit2Version"
+#### to
+    compile "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofit2Version"
+
+    compile "io.reactivex.rxjava2:rxjava:$rootProject.rxjava2Version" // RxJava // Should update at some point
+    compile "io.reactivex.rxjava2:rxandroid:$rootProject.rxjava2RxandroidVersion" // RxAndroid providing Android Scheduler // Should update at some point
+
+#### RestClient.java from
+    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+#### to
+    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+
+#### WeatherService.java from
+    Call<ApiResponse> getWeather(@Query("q") String strCity);
+#### to
+    Observable<ApiResponse> getWeather(@Query("q") String strCity);
+
+#### MainActivity.java from
+    Call<ApiResponse> call = App.getRestClient().getWeatherService().getWeather(searchEditText.getText().toString());
+    call.enqueue(new Callback<ApiResponse>() {
+        @Override
+        public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+            if (response.isSuccessful()) {
+                handleResponse(response.body());
+            } else {
+                handleFailure(response.code() + response.message());
+            }
+        }
+
+        @Override
+        public void onFailure(Call<ApiResponse> call, Throwable t) {
+            handleFailure(t.getMessage());
+        }
+    });
+#### to
+    disposable = App.getRestClient().getWeatherService().getWeather(searchEditText.getText().toString())
+            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Consumer<ApiResponse>() {
+                       @Override
+                       public void accept(@NonNull ApiResponse apiResponse) throws Exception {
+                           handleResponse(apiResponse);
+                       }
+                   },
+                   new Consumer<Throwable>() {
+                       @Override
+                       public void accept(@NonNull Throwable throwable) throws Exception {
+                           handleFailure(throwable.getMessage());
+                      }
+                  });
+
+then disposable could dispose the subsribed weather request later.
 
 # Upgrade v2.1 - common request parameters in interceptor
 ===============

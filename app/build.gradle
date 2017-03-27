@@ -8,8 +8,8 @@ android {
         applicationId "com.andexert.retrofitexample"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 11
-        versionName "v2.1"
+        versionCode 12
+        versionName "v2.2"
     }
     buildTypes {
         release {
@@ -27,7 +27,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile "com.squareup.retrofit2:retrofit:$rootProject.retrofit2Version"
     compile "com.squareup.retrofit2:converter-gson:$rootProject.retrofit2Version"
-//    compile "com.squareup.retrofit2:adapter-rxjava:$rootProject.retrofit2Version"
+    compile "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofit2Version"
     compile "com.squareup.okhttp3:okhttp:$rootProject.okhttp3Version"
 //    compile "com.squareup.okhttp3:mockwebserver:$rootProject.okhttp3Version"
 //    compile "com.squareup.okhttp3:okhttp-urlconnection:$rootProject.okhttp3Version"
@@ -40,4 +40,7 @@ dependencies {
 
     compile "org.parceler:parceler-api:$rootProject.parcelerVersion"
     annotationProcessor "org.parceler:parceler:$rootProject.parcelerVersion"
+
+    compile "io.reactivex.rxjava2:rxjava:$rootProject.rxjava2Version" // RxJava // Should update at some point
+    compile "io.reactivex.rxjava2:rxandroid:$rootProject.rxjava2RxandroidVersion" // RxAndroid providing Android Scheduler // Should update at some point
 }

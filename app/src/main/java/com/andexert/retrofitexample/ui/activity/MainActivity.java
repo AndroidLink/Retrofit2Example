@@ -23,9 +23,11 @@ import java.text.SimpleDateFormat;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class MainActivity extends Activity {
@@ -55,6 +57,8 @@ public class MainActivity extends Activity {
     @BindView(R.id.activity_main_weather_text)
     protected TextView weatherTextView;
 
+    private Disposable disposable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,27 +68,33 @@ public class MainActivity extends Activity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (null != disposable && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
+    }
+
     @OnClick(R.id.activity_main_search_button)
     protected void onSearchClick()
     {
         if (!searchEditText.getText().toString().equals(""))
         {
-            Call<ApiResponse> call = App.getRestClient().getWeatherService().getWeather(searchEditText.getText().toString());
-            call.enqueue(new Callback<ApiResponse>() {
-                @Override
-                public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                    if (response.isSuccessful()) {
-                        handleResponse(response.body());
-                    } else {
-                        handleFailure(response.code() + response.message());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ApiResponse> call, Throwable t) {
-                    handleFailure(t.getMessage());
-                }
-            });
+            disposable = App.getRestClient().getWeatherService().getWeather(searchEditText.getText().toString())
+                    .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<ApiResponse>() {
+                                   @Override
+                                   public void accept(@NonNull ApiResponse apiResponse) throws Exception {
+                                       handleResponse(apiResponse);
+                                   }
+                               },
+                            new Consumer<Throwable>() {
+                                @Override
+                                public void accept(@NonNull Throwable throwable) throws Exception {
+                                    handleFailure(throwable.getMessage());
+                                }
+                            });
         }
     }
 
