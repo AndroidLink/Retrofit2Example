@@ -1,7 +1,10 @@
 package com.andexert.retrofitexample.ui.activity;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +19,7 @@ import com.andexert.retrofitexample.R;
 import com.andexert.retrofitexample.app.App;
 import com.andexert.retrofitexample.rest.model.ApiResponse;
 import com.andexert.retrofitexample.rest.service.ApiConstant;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.sql.Date;
@@ -62,7 +66,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-
+        restoreLatestResponse();
     }
 
     @OnClick(R.id.activity_main_search_button)
@@ -91,6 +95,26 @@ public class MainActivity extends Activity {
     }
 
     private void handleResponse(ApiResponse apiResponse) {
+        saveLatestResponse(apiResponse);
+        refresh(apiResponse);
+    }
+
+    private void restoreLatestResponse() {
+        SharedPreferences preferences = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
+        String response = preferences.getString("LAR", "");
+        if (!TextUtils.isEmpty(response)) {
+            ApiResponse apiResponse = new Gson().fromJson(response, ApiResponse.class);
+
+            refresh(apiResponse);
+        }
+    }
+    private void saveLatestResponse(ApiResponse apiResponse) {
+        SharedPreferences preferences = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
+        preferences.edit().putString("LAR", new Gson().toJson(apiResponse)).commit();
+        Log.e(TAG, preferences.getString("LAR", ""));
+    }
+
+    private void refresh(ApiResponse apiResponse) {
         final Date sunriseDate = new Date(apiResponse.getSys().getSunriseTime() * 1000);
         final Date sunsetDate = new Date(apiResponse.getSys().getSunsetTime() * 1000);
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh':'mm':'ss a");
