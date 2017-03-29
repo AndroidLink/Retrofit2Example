@@ -1,6 +1,6 @@
-package com.andexert.retrofitexample.rest.service;
+package com.togo.home.data.remote;
 
-import com.andexert.retrofitexample.rest.model.ApiResponse;
+import com.togo.home.data.model.ApiResponse;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;

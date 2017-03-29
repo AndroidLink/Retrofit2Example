@@ -1,4 +1,4 @@
-package com.andexert.retrofitexample.rest;
+package com.togo.home.data.remote;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

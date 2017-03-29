@@ -1,10 +1,10 @@
-package com.andexert.retrofitexample.rest.model;
+package com.togo.home.data.model;
 
-import com.andexert.retrofitexample.model.Coord;
-import com.andexert.retrofitexample.model.MainInfos;
-import com.andexert.retrofitexample.model.Sys;
-import com.andexert.retrofitexample.model.Weather;
-import com.andexert.retrofitexample.model.Wind;
+import com.togo.home.data.remote.response.Coord;
+import com.togo.home.data.remote.response.MainInfos;
+import com.togo.home.data.remote.response.Sys;
+import com.togo.home.data.remote.response.Weather;
+import com.togo.home.data.remote.response.Wind;
 import com.google.gson.annotations.SerializedName;
 
 import org.parceler.Parcel;

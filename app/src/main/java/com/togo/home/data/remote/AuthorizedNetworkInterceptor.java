@@ -1,4 +1,4 @@
-package com.andexert.retrofitexample.rest.service;
+package com.togo.home.data.remote;
 
 import java.io.IOException;
 

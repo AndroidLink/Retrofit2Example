@@ -1,8 +1,6 @@
-package com.andexert.retrofitexample.rest;
+package com.togo.home.data.remote;
 
-import com.andexert.retrofitexample.BuildConfig;
-import com.andexert.retrofitexample.rest.service.AuthorizedNetworkInterceptor;
-import com.andexert.retrofitexample.rest.service.WeatherService;
+import com.togo.home.BuildConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

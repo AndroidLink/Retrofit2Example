@@ -1,4 +1,4 @@
-package com.andexert.retrofitexample;
+package com.togo.home;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

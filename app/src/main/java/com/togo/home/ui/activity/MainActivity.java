@@ -1,4 +1,4 @@
-package com.andexert.retrofitexample.ui.activity;
+package com.togo.home.ui.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -12,9 +12,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.andexert.retrofitexample.R;
-import com.andexert.retrofitexample.app.App;
-import com.andexert.retrofitexample.rest.model.ApiResponse;
+import com.togo.home.R;
+import com.togo.home.ui.app.App;
+import com.togo.home.data.model.ApiResponse;
 import com.squareup.picasso.Picasso;
 
 import java.sql.Date;

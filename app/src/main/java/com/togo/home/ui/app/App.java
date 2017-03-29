@@ -1,8 +1,8 @@
-package com.andexert.retrofitexample.app;
+package com.togo.home.ui.app;
 
 import android.app.Application;
 
-import com.andexert.retrofitexample.rest.RestClient;
+import com.togo.home.data.remote.RestClient;
 
 /**
  * Author :    Chutaux Robin
