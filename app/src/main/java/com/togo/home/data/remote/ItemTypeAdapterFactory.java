@@ -12,7 +12,7 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 
 /**
- * Created by lukas on 6/10/14.
+ * Created by yangfeng on 17-3-30.
  */
 public class ItemTypeAdapterFactory implements TypeAdapterFactory {
 

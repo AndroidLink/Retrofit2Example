@@ -2,7 +2,7 @@ package com.togo.home.ui.app;
 
 import android.app.Application;
 
-import com.togo.home.data.remote.RestClient;
+import com.togo.home.data.remote.ServiceGenerator;
 
 /**
  * Author :    Chutaux Robin
@@ -10,17 +10,17 @@ import com.togo.home.data.remote.RestClient;
  */
 public class App extends Application
 {
-    private static RestClient restClient;
+    private static ServiceGenerator restClient;
 
     @Override
     public void onCreate()
     {
         super.onCreate();
 
-        restClient = new RestClient();
+        restClient = new ServiceGenerator();
     }
 
-    public static RestClient getRestClient()
+    public static ServiceGenerator getRestClient()
     {
         return restClient;
     }

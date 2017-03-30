@@ -21,6 +21,17 @@ public class AuthorizedNetworkInterceptor implements Interceptor {
 
             httpUrlBuilder.addQueryParameter(ApiConstant.APP_KEY, ApiConstant.APP_ID);
 
+            httpUrlBuilder.addQueryParameter("app_key", "taogu");
+            httpUrlBuilder.addQueryParameter("osversion", "21");
+            httpUrlBuilder.addQueryParameter("token", "");
+            httpUrlBuilder.addQueryParameter("uuid", "");
+            httpUrlBuilder.addQueryParameter("version", "170");
+            httpUrlBuilder.addQueryParameter("resolution", "1080x1920");
+            httpUrlBuilder.addQueryParameter("net", "TYPE_WIFI");
+//            httpUrlBuilder.addQueryParameter("app", "4");
+            httpUrlBuilder.addQueryParameter("os", "ANDROID");
+            httpUrlBuilder.addQueryParameter("model", "Redmi Note 3");
+
             HttpUrl httpUrl = httpUrlBuilder.build();
             Request.Builder requestBuilder = originalRequest.newBuilder().url(httpUrl);
             Request modifiedRequest = requestBuilder.build();

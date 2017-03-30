@@ -10,16 +10,16 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Author :    Chutaux Robin
- * Date :      10/2/2014
- */
-public class RestClient
-{
-    private static final String BASE_URL = "http://api.openweathermap.org/";
-    private WeatherService apiService;
+import static com.togo.home.data.remote.TogoService.BASE_URL;
 
-    public RestClient()
+/**
+ * Created by yangfeng on 17-3-30.
+ */
+public class ServiceGenerator
+{
+    private TogoService apiService;
+
+    public ServiceGenerator()
     {
         Gson gson = new GsonBuilder()
             .registerTypeAdapterFactory(new ItemTypeAdapterFactory())
@@ -52,7 +52,7 @@ public class RestClient
         retrofitBuilder.baseUrl(BASE_URL);
 
         Retrofit retrofit = retrofitBuilder.build();
-        apiService = retrofit.create(WeatherService.class);
+        apiService = retrofit.create(TogoService.class);
     }
 
     private static HttpLoggingInterceptor getHttpLoggingInterceptor(){
@@ -65,7 +65,7 @@ public class RestClient
         return httpLoggingInterceptor;
     }
 
-    public WeatherService getWeatherService()
+    public TogoService getWeatherService()
     {
         return apiService;
     }
