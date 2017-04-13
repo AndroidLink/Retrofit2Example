@@ -36,6 +36,7 @@ public class AuthorizedNetworkInterceptor implements Interceptor {
             Request.Builder requestBuilder = originalRequest.newBuilder().url(httpUrl);
             Request modifiedRequest = requestBuilder.build();
 
+
             return chain.proceed(modifiedRequest);
         }
 
