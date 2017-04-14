@@ -65,7 +65,7 @@ public class ServiceGenerator
         return httpLoggingInterceptor;
     }
 
-    public TogoService getWeatherService()
+    public TogoService getServiceInstance()
     {
         return apiService;
     }

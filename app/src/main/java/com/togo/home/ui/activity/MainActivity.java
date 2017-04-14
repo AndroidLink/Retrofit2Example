@@ -18,6 +18,7 @@ import com.togo.home.R;
 import com.togo.home.data.model.SummaryWrapper;
 import com.togo.home.data.remote.response.PatientFirstPageModel;
 import com.togo.home.ui.app.App;
+import com.togo.home.ui.util.AppFinder;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -66,7 +67,14 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        tryRequest(4);
+//        tryRequest(4);
+        AppFinder.getInstance()
+                .subscribe(new Consumer<SummaryWrapper>() {
+                    @Override
+                    public void accept(@NonNull SummaryWrapper apiResponse) throws Exception {
+                        handleResponse(apiResponse);
+                    }
+                });
     }
 
     private void tryRequest(int appid) {
@@ -85,7 +93,7 @@ public class MainActivity extends Activity {
         }
 
         ongoingId = appid;
-        disposable = App.getRestClient().getWeatherService().fetchTogoHome(appid)
+        disposable = App.getRestClient().getServiceInstance().fetchTogoHome(appid)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .doOnTerminate(new Action() {
                     @Override
@@ -117,9 +125,9 @@ public class MainActivity extends Activity {
 
     @OnClick(R.id.activity_main_search_button)
     protected void onSearchClick() {
-        if (!searchEditText.getText().toString().equals("")){
-            tryRequest(Integer.parseInt(searchEditText.getText().toString()));
-        }
+//        if (!searchEditText.getText().toString().equals("")){
+//            tryRequest(Integer.parseInt(searchEditText.getText().toString()));
+//        }
     }
 
     private void handleResponse(SummaryWrapper apiResponse) {
