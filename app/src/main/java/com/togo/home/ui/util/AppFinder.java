@@ -45,6 +45,15 @@ public class AppFinder {
     private final Map<Integer, SummaryWrapper> failureMap = new Hashtable<>();
 
     private Consumer consumer;
+    private Action completer;
+
+    public int min() {
+        return getInitialIndex();
+    }
+
+    public int max() {
+        return foundCollection.isEmpty() ? min() : foundCollection.peek();
+    }
 
     interface ScopeHelper {
         int startIndex();
@@ -69,12 +78,13 @@ public class AppFinder {
     }
 
     public void subscribe() {
-        subscribe(null);
+        subscribe(null, null);
     }
 
-    public <T> void subscribe(Consumer<T> consumer) {
+    public <T> void subscribe(Consumer<T> consumer, Action completer) {
         // singleton, should add consumer to support multiple subscribe.
         this.consumer = consumer;
+        this.completer = completer;
 
         if (working) {
             // skip
@@ -169,7 +179,7 @@ public class AppFinder {
         }
     }
 
-    private void nextGreeceTry() {
+    private void nextGreeceTry() throws Exception {
         if (tryingId + 1 == lastBackIndex) {
             stop();
             return;
@@ -187,7 +197,7 @@ public class AppFinder {
 
     // save current trying app id to 'lastBackIndex', and then
     // goto try back in the middle of app id between current and last found peek of 'foundCollection'.
-    private void backRegretTry() {
+    private void backRegretTry() throws Exception {
         if (foundCollection.isEmpty()) {
             // do nothing
             Log.i(TAG, "none was explored yet. " + tryingId);
@@ -207,20 +217,27 @@ public class AppFinder {
         }
     }
 
-    private void stop() {
+    private void stop() throws Exception {
         working = false;
         disposable.dispose();
+        if (null != completer) {
+            completer.run();
+        }
     }
 
     private int getStartIndex() {
         if (foundCollection.isEmpty()) {
-            if (scopeHelper == null) {
-                return START_INDEX;
-            } else {
-                return scopeHelper.startIndex();
-            }
+            return getInitialIndex();
         } else {
             return foundCollection.peek();
+        }
+    }
+
+    private int getInitialIndex() {
+        if (scopeHelper == null) {
+            return START_INDEX;
+        } else {
+            return scopeHelper.startIndex();
         }
     }
 }

@@ -23,11 +23,14 @@ import com.togo.home.ui.util.AppFinder;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -69,6 +72,30 @@ public class MainActivity extends Activity {
 
 //        tryRequest(4);
         AppFinder.getInstance()
+                .subscribe(new Consumer<SummaryWrapper>() {
+                               @Override
+                               public void accept(@NonNull SummaryWrapper apiResponse) throws Exception {
+                                   handleResponse(apiResponse);
+                               }
+                           },
+                        new Action() {
+                            @Override
+                            public void run() throws Exception {
+                                rangeFetch(AppFinder.getInstance().min(), AppFinder.getInstance().max());
+                            }
+                        });
+    }
+
+    private void rangeFetch(int min, int max) {
+        Log.e(TAG, "rangeFetch fetching app: " + min + " - " + max);
+        Observable.range(min, max)
+                .flatMap(new Function<Integer, ObservableSource<SummaryWrapper>>() {
+                    @Override
+                    public ObservableSource<SummaryWrapper> apply(@NonNull Integer appId) throws Exception {
+                        return App.getRestClient().getServiceInstance().fetchTogoHome(appId);
+                    }
+                })
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<SummaryWrapper>() {
                     @Override
                     public void accept(@NonNull SummaryWrapper apiResponse) throws Exception {
