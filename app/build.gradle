@@ -27,6 +27,8 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
     compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+    compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
+
     compile "com.squareup.retrofit2:retrofit:$rootProject.retrofit2Version"
     compile "com.squareup.retrofit2:converter-gson:$rootProject.retrofit2Version"
     compile "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofit2Version"

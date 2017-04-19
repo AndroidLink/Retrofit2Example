@@ -2,16 +2,12 @@ package com.togo.home.ui.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.text.TextUtils;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
 import com.togo.home.R;
 import com.togo.home.data.model.SummaryWrapper;
 import com.togo.home.data.remote.response.PatientFirstPageModel;
@@ -33,20 +29,48 @@ import io.reactivex.schedulers.Schedulers;
 public class MainActivity extends FragmentActivity {
     private final static String TAG = MainActivity.class.getSimpleName();
 
-    @BindView(R.id.entityCell)
-    protected RelativeLayout entityCell;
+    @BindView(R.id.rv)
+    RecyclerView recyclerView;
 
-    @BindView(R.id.coverPhoto)
-    protected ImageView coverPhoto;
+    private HospitalAdapter hospitalAdapter;
+    private StaggeredGridLayoutManager layoutManager;
 
-    @BindView(R.id.displayName)
-    protected TextView displayName;
+//    private PagingInfo pagingInfo;
+//    private boolean isLoading = false;
 
-    @BindView(R.id.emergentLine)
-    protected TextView emergentLine;
+    private int firstVisibleItem() {
+        int[] positions = layoutManager.findFirstVisibleItemPositions(null);
+        return positions[1];
+    }
 
-    @BindView(R.id.serviceLine)
-    protected TextView serviceLine;
+    private int lastVisibleItem() {
+        int[] positions = layoutManager.findLastVisibleItemPositions(null);
+        return positions[0];
+    }
+
+    private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(final RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+
+            int visibleItemCount = recyclerView.getChildCount();
+            int totalItemCount = recyclerView.getAdapter().getItemCount();
+            int firstVisibleItem = firstVisibleItem();
+
+            if ((visibleItemCount + firstVisibleItem) >= totalItemCount
+                    && totalItemCount > 0
+                    /*&& !isLoading
+                    && !pagingInfo.isLastPage()*/) {
+//                pagingInfo.incrementPage();
+                // load page
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +78,24 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+
+        recyclerView.setLayoutManager(layoutManager);
+        hospitalAdapter = new HospitalAdapter(this);
+//        hospitalAdapter.setOnItemClickListener(this);
+//        hospitalAdapter.setOnReloadClickListener(this);
+//        recyclerView.setItemAnimator(new SlideInUpAnimator());
+        recyclerView.setAdapter(hospitalAdapter);
+
+        // Pagination
+        recyclerView.addOnScrollListener(recyclerViewOnScrollListener);
+
         AppFinder.getInstance()
                 .subscribe(new Consumer<SummaryWrapper>() {
                                @Override
                                public void accept(@NonNull SummaryWrapper apiResponse) throws Exception {
-                                   handleResponse(apiResponse);
+                                   // do nothing
+//                                   handleResponse(apiResponse);
                                }
                            },
                         new Action() {
@@ -67,6 +104,14 @@ public class MainActivity extends FragmentActivity {
                                 rangeFetch(AppFinder.getInstance().min(), AppFinder.getInstance().max());
                             }
                         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        hospitalAdapter.setOnItemClickListener(null);
+        recyclerView.removeOnScrollListener(recyclerViewOnScrollListener);
     }
 
     private void rangeFetch(int min, int max) {
@@ -95,18 +140,8 @@ public class MainActivity extends FragmentActivity {
             return;
         }
 
-//        getActionBar().setTitle(model.getDisplayName());
-
-        if (!TextUtils.isEmpty(model.getCoverPhoto())) {
-            Picasso.with(this).load(model.getCoverPhoto()).into(coverPhoto);
-        }
-
-        displayName.setText(model.getDisplayName());
-        emergentLine.setText(model.getEmergentLine());
-        serviceLine.setText(model.getServiceLine());
-
-        Log.e(TAG, "Hospital name : " + model.getAboutHospitalName());
-        entityCell.setVisibility(View.VISIBLE);
+        hospitalAdapter.add(model);
+        recyclerView.scrollToPosition(hospitalAdapter.getItemCount() - 1);
     }
 
     @Override
@@ -129,5 +164,9 @@ public class MainActivity extends FragmentActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void scrollToTop(){
+        recyclerView.scrollToPosition(0);
     }
 }
