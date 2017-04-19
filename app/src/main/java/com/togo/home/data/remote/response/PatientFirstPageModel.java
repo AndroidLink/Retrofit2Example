@@ -2,6 +2,8 @@ package com.togo.home.data.remote.response;
 
 import android.text.TextUtils;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -14,10 +16,18 @@ public class PatientFirstPageModel implements Serializable {
     public static final int NOTICE_ALWAYS = 2; // 每次都弹
 
     private String hospital_guid;
-    private String hospital_image;
-    private String hospital_name;
+
+    @SerializedName("hospital_image")
+    private String coverPhoto;
+
+    @SerializedName("hospital_name")
+    private String displayName;
+
     private String customer_service;
-    private String hospital_telephone;
+
+    @SerializedName("hospital_telephone")
+    private String serviceLine;
+
     private String customer_service_xbkp;
     private List<String> wish_words;
     private String aboutQrCode;
@@ -33,7 +43,10 @@ public class PatientFirstPageModel implements Serializable {
     private List<Entrys> entrys;
     private AssistantInfo shopping_drug_assistant_info; //购药助手信息
     private String copyright;
-    private String emergency_telephone;
+
+    @SerializedName("emergency_telephone")
+    private String emergentLine;
+
     private Notices infos;
     private List<NetHosButtonItem> buttons;
     private NetHosDiseases diseases;
@@ -120,20 +133,20 @@ public class PatientFirstPageModel implements Serializable {
         this.wish_words = wishWords;
     }
 
-    public String getHospital_image() {
-        return hospital_image;
+    public String getCoverPhoto() {
+        return coverPhoto;
     }
 
-    public void setHospital_image(String hospitalImage) {
-        this.hospital_image = hospitalImage;
+    public void setCoverPhoto(String hospitalImage) {
+        this.coverPhoto = hospitalImage;
     }
 
-    public String getHospital_name() {
-        return hospital_name;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setHospital_name(String hospitalName) {
-        this.hospital_name = hospitalName;
+    public void setDisplayName(String hospitalName) {
+        this.displayName = hospitalName;
     }
 
     public String getCustomer_service() {
@@ -153,17 +166,17 @@ public class PatientFirstPageModel implements Serializable {
     }
 
     /**
-     * @return the hospital_telephone
+     * @return the serviceLine
      */
-    public String getHospital_telephone() {
-        return hospital_telephone;
+    public String getServiceLine() {
+        return serviceLine;
     }
 
     /**
-     * @param hospitalTelephone the hospital_telephone to set
+     * @param hospitalTelephone the serviceLine to set
      */
-    public void setHospital_telephone(String hospitalTelephone) {
-        this.hospital_telephone = hospitalTelephone;
+    public void setServiceLine(String hospitalTelephone) {
+        this.serviceLine = hospitalTelephone;
     }
 
     public String getCustomer_service_xbkp() {
@@ -222,12 +235,12 @@ public class PatientFirstPageModel implements Serializable {
         return copyright;
     }
 
-    public String getEmergency_telephone() {
-        return emergency_telephone;
+    public String getEmergentLine() {
+        return emergentLine;
     }
 
-    public void setEmergency_telephone(String emergencyTelephone) {
-        this.emergency_telephone = emergencyTelephone;
+    public void setEmergentLine(String emergencyTelephone) {
+        this.emergentLine = emergencyTelephone;
     }
 
     public News getNews() {

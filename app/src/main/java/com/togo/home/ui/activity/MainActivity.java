@@ -40,8 +40,8 @@ public class MainActivity extends FragmentActivity {
     @BindView(R.id.displayName)
     protected TextView displayName;
 
-    @BindView(R.id.emergeLine)
-    protected TextView emergeLine;
+    @BindView(R.id.emergentLine)
+    protected TextView emergentLine;
 
     @BindView(R.id.serviceLine)
     protected TextView serviceLine;
@@ -111,15 +111,15 @@ public class MainActivity extends FragmentActivity {
             return;
         }
 
-        getActionBar().setTitle(model.getHospital_name());
+        getActionBar().setTitle(model.getDisplayName());
 
-        if (!TextUtils.isEmpty(model.getHospital_image())) {
-            Picasso.with(this).load(model.getHospital_image()).into(coverPhoto);
+        if (!TextUtils.isEmpty(model.getCoverPhoto())) {
+            Picasso.with(this).load(model.getCoverPhoto()).into(coverPhoto);
         }
 
-        displayName.setText(model.getHospital_name());
-        emergeLine.setText(model.getComprehensive_service_telephone());
-        serviceLine.setText(model.getEmergency_telephone());
+        displayName.setText(model.getDisplayName());
+        emergentLine.setText(model.getEmergentLine());
+        serviceLine.setText(model.getServiceLine());
 
         Log.e(TAG, "Hospital name : " + model.getAboutHospitalName());
         entityCell.setVisibility(View.VISIBLE);

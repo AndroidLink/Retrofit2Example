@@ -21,7 +21,7 @@
             android:text="Name"/>
 
         <TextView
-            android:id="@+id/emergeLine"
+            android:id="@+id/emergentLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -35,8 +35,8 @@
             android:layout_width="wrap_content"
             android:layout_marginTop="5dp"
             android:layout_height="wrap_content"
-            android:layout_alignRight="@id/emergeLine"
-            android:layout_above="@id/emergeLine"
+            android:layout_alignRight="@id/emergentLine"
+            android:layout_above="@id/emergentLine"
             android:text="010-87654321"/>
 
 </RelativeLayout>
