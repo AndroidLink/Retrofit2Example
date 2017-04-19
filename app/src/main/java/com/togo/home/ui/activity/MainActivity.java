@@ -1,13 +1,12 @@
 package com.togo.home.ui.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -21,7 +20,6 @@ import com.togo.home.ui.app.App;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -30,32 +28,23 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
     private final static String TAG = MainActivity.class.getSimpleName();
 
-    @BindView(R.id.activity_main_data)
-    protected RelativeLayout dataLayout;
+    @BindView(R.id.entityCell)
+    protected RelativeLayout entityCell;
 
-    @BindView(R.id.activity_main_weather)
-    protected RelativeLayout weatherLayout;
+    @BindView(R.id.coverPhoto)
+    protected ImageView coverPhoto;
 
-    @BindView(R.id.activity_main_search)
-    protected EditText searchEditText;
+    @BindView(R.id.displayName)
+    protected TextView displayName;
 
-    @BindView(R.id.activity_main_sys_country_value)
-    protected TextView countryTextView;
+    @BindView(R.id.emergeLine)
+    protected TextView emergeLine;
 
-    @BindView(R.id.activity_main_sys_sunrise_value)
-    protected TextView sunriseTextView;
-
-    @BindView(R.id.activity_main_sys_sunset_value)
-    protected TextView sunsetTextView;
-
-    @BindView(R.id.activity_main_weather_icon)
-    protected ImageView iconImageView;
-
-    @BindView(R.id.activity_main_weather_text)
-    protected TextView weatherTextView;
+    @BindView(R.id.serviceLine)
+    protected TextView serviceLine;
 
     private Disposable disposable;
     private int ongoingId = 0;
@@ -115,13 +104,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    @OnClick(R.id.activity_main_search_button)
-    protected void onSearchClick() {
-        if (!searchEditText.getText().toString().equals("")){
-            tryRequest(Integer.parseInt(searchEditText.getText().toString()));
-        }
-    }
-
     private void handleResponse(SummaryWrapper apiResponse) {
         PatientFirstPageModel model = apiResponse.getData();
         if (null == model) {
@@ -129,43 +111,24 @@ public class MainActivity extends Activity {
             return;
         }
 
-        getActionBar().setTitle(model.getAboutHospitalName());
-        countryTextView.setText(model.getAboutHospitalName());
+        getActionBar().setTitle(model.getHospital_name());
+
         if (!TextUtils.isEmpty(model.getHospital_image())) {
-            Picasso.with(this).load(model.getHospital_image()).into(iconImageView);
+            Picasso.with(this).load(model.getHospital_image()).into(coverPhoto);
         }
-        weatherTextView.setText(model.getEmergency_telephone());
-        sunsetTextView.setText(model.getAboutQrCode());
-        sunriseTextView.setText(model.getAboutQrCode());
 
-//        final Date sunriseDate = new Date(apiResponse.getSys().getSunriseTime() * 1000);
-//        final Date sunsetDate = new Date(apiResponse.getSys().getSunsetTime() * 1000);
-//        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh':'mm':'ss a");
-//
-//        getActionBar().setTitle(apiResponse.getStrCityName());
-//        countryTextView.setText(apiResponse.getSys().getStrCountry());
-//
-//        if (!apiResponse.getWeather().isEmpty())
-//        {
-//            Picasso.with(MainActivity.this).load("http://openweathermap.org/img/w/" + apiResponse.getWeather().get(0).getStrIconName() + ".png").into(iconImageView);
-//            weatherTextView.setText(apiResponse.getWeather().get(0).getStrDesc());
-//        }
-//
-//        sunsetTextView.setText(simpleDateFormat.format(sunsetDate));
-//        sunriseTextView.setText(simpleDateFormat.format(sunriseDate));
+        displayName.setText(model.getHospital_name());
+        emergeLine.setText(model.getComprehensive_service_telephone());
+        serviceLine.setText(model.getEmergency_telephone());
 
-        searchEditText.setText("");
         Log.e(TAG, "Hospital name : " + model.getAboutHospitalName());
-        dataLayout.setVisibility(View.VISIBLE);
-        weatherLayout.setVisibility(View.VISIBLE);
+        entityCell.setVisibility(View.VISIBLE);
     }
 
     private void handleFailure(String message) {
         Log.e(TAG, "Error : " + message);
-        searchEditText.setText("");
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
-        dataLayout.setVisibility(View.GONE);
-        weatherLayout.setVisibility(View.GONE);
+        entityCell.setVisibility(View.GONE);
     }
 
     @Override

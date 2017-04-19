@@ -1,92 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_centerVertical="true"
-    android:layout_marginTop="20dp">
-    <RelativeLayout
-        android:id="@+id/activity_main_data"
+    android:layout_marginTop="10dp"
+        android:id="@+id/entityCell"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/activity_main_sys_country"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:text="Country : "/>
-
-        <TextView
-            android:id="@+id/activity_main_sys_country_value"
-            android:layout_toRightOf="@id/activity_main_sys_country"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:text="Country"/>
-
-        <TextView
-            android:id="@+id/activity_main_sys_sunrise"
-            android:layout_below="@+id/activity_main_sys_country"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="20dp"
-            android:text="Sunrise : "/>
-
-        <TextView
-            android:id="@+id/activity_main_sys_sunrise_value"
-            android:layout_below="@+id/activity_main_sys_country"
-            android:layout_toRightOf="@id/activity_main_sys_country"
-            android:layout_width="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:text="Country"/>
-
-        <TextView
-            android:id="@+id/activity_main_sys_sunset"
-            android:layout_below="@+id/activity_main_sys_sunrise"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="20dp"
-            android:text="Sunset : "/>
-
-        <TextView
-            android:id="@+id/activity_main_sys_sunset_value"
-            android:layout_below="@+id/activity_main_sys_sunrise"
-            android:layout_toRightOf="@id/activity_main_sys_country"
-            android:layout_width="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:text="Country"/>
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/activity_main_weather"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ImageView
-            android:id="@+id/activity_main_weather_icon"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:id="@+id/coverPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
             android:src="@drawable/ic_launcher"/>
 
         <TextView
-            android:id="@+id/activity_main_weather_text"
+            android:id="@+id/displayName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/coverPhoto"
+            android:layout_marginLeft="20dp"
+            android:text="Name"/>
+
+        <TextView
+            android:id="@+id/emergeLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@+id/activity_main_weather_icon"
-            android:text="Scatterred clouds"/>
+            android:layout_alignBottom="@+id/coverPhoto"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:text="010-12345678"/>
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/serviceLine"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/emergeLine"
+            android:layout_above="@id/emergeLine"
+            android:text="010-87654321"/>
+
 </RelativeLayout>
