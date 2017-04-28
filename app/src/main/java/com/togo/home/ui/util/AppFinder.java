@@ -7,6 +7,7 @@ import com.togo.home.data.remote.TogoService;
 import com.togo.home.data.remote.response.PatientFirstPageModel;
 import com.togo.home.ui.app.App;
 
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
@@ -44,6 +45,8 @@ public class AppFinder {
     private final Stack<Integer> foundCollection = new Stack<>();
     private final Map<Integer, SummaryWrapper> failureMap = new Hashtable<>();
 
+    private final Set cachedAppIds = new HashSet();
+
     private Consumer consumer;
     private Action completer;
 
@@ -55,9 +58,17 @@ public class AppFinder {
         return foundCollection.isEmpty() ? min() : foundCollection.peek();
     }
 
-    interface ScopeHelper {
+    private void cached(int appId) {
+        cachedAppIds.add(appId);
+    }
+
+    public boolean skip(int id) {
+        return !cachedAppIds.contains(id);
+    }
+
+    public interface ScopeHelper {
         int startIndex();
-        int saveLastIndex();
+        void saveLastIndex(int id);
     }
 
     public static AppFinder getInstance() {
@@ -140,6 +151,7 @@ public class AppFinder {
             // todo: post such model for outside usage
             Log.d(TAG, "get model for " + tryingId + ", " + model.getAboutHospitalName());
             if (consumer != null) {
+                cached(tryingId);
                 consumer.accept(apiResponse);
             }
 
@@ -220,6 +232,9 @@ public class AppFinder {
     private void stop() throws Exception {
         working = false;
         disposable.dispose();
+        if (null != scopeHelper) {
+            scopeHelper.saveLastIndex(tryingId);
+        }
         if (null != completer) {
             completer.run();
         }

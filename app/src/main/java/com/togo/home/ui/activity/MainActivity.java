@@ -14,6 +14,9 @@ import com.togo.home.data.remote.response.PatientFirstPageModel;
 import com.togo.home.ui.app.App;
 import com.togo.home.ui.util.AppFinder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
@@ -23,6 +26,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -35,42 +39,55 @@ public class MainActivity extends FragmentActivity {
     private HospitalAdapter hospitalAdapter;
     private StaggeredGridLayoutManager layoutManager;
 
-//    private PagingInfo pagingInfo;
-//    private boolean isLoading = false;
+    /// AppFinder helper class region
+    /// Singleton instance, subscribe with two objects: 1. a consumer, with the name seekingRefresher, to
+    /// listen for app info refreshing while seeking the maximize ID. 2. an action, with the name
+    /// seekingFinal, to listen for the notification of seeking complete.
+    private final AppFinder appFinder = AppFinder.getInstance();
 
-    private int firstVisibleItem() {
-        int[] positions = layoutManager.findFirstVisibleItemPositions(null);
-        return positions[1];
-    }
-
-    private int lastVisibleItem() {
-        int[] positions = layoutManager.findLastVisibleItemPositions(null);
-        return positions[0];
-    }
-
-    private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
+    private final Consumer seekingRefresher = new Consumer<SummaryWrapper>() {
         @Override
-        public void onScrollStateChanged(final RecyclerView recyclerView, int newState) {
-            super.onScrollStateChanged(recyclerView, newState);
-        }
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            super.onScrolled(recyclerView, dx, dy);
-
-            int visibleItemCount = recyclerView.getChildCount();
-            int totalItemCount = recyclerView.getAdapter().getItemCount();
-            int firstVisibleItem = firstVisibleItem();
-
-            if ((visibleItemCount + firstVisibleItem) >= totalItemCount
-                    && totalItemCount > 0
-                    /*&& !isLoading
-                    && !pagingInfo.isLastPage()*/) {
-//                pagingInfo.incrementPage();
-                // load page
-            }
+        public void accept(@NonNull SummaryWrapper apiResponse) throws Exception {
+            // do nothing
+            handleResponse(apiResponse);
         }
     };
+
+    private final Action seekingFinal = new Action() {
+        @Override
+        public void run() throws Exception {
+            rangeFetch(AppFinder.getInstance().min(), AppFinder.getInstance().max());
+        }
+    };
+    /// AppFinder region end
+
+    /// Fetch app first page region
+    /// loop a range of app id, filtered by seekCacheChecker that skip those ids that has
+    /// been refreshed before, then flatMap to request of app first page info, in the end
+    /// consume by final appFirstPageConsumer.
+    /// see to method 'rangeFetch'
+    private final Predicate seekCacheChecker = new Predicate<Integer>() {
+        @Override
+        public boolean test(@NonNull Integer id) throws Exception {
+            return AppFinder.getInstance().skip(id);
+        }
+    };
+
+    private final Function appId2FirstPageMapper = new Function<Integer, ObservableSource<SummaryWrapper>>() {
+        @Override
+        public ObservableSource<SummaryWrapper> apply(@NonNull Integer appId) throws Exception {
+            return App.getRestClient().getServiceInstance().fetchTogoHome(appId);
+        }
+    };
+
+    private final Consumer appFirstPageConsumer = new Consumer<SummaryWrapper>() {
+        @Override
+        public void accept(@NonNull SummaryWrapper apiResponse) throws Exception {
+            handleResponse(apiResponse);
+        }
+    };
+    /// Fetch app first page region end
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,28 +99,12 @@ public class MainActivity extends FragmentActivity {
 
         recyclerView.setLayoutManager(layoutManager);
         hospitalAdapter = new HospitalAdapter(this);
-//        hospitalAdapter.setOnItemClickListener(this);
-//        hospitalAdapter.setOnReloadClickListener(this);
-//        recyclerView.setItemAnimator(new SlideInUpAnimator());
+
         recyclerView.setAdapter(hospitalAdapter);
 
-        // Pagination
-        recyclerView.addOnScrollListener(recyclerViewOnScrollListener);
-
-        AppFinder.getInstance()
-                .subscribe(new Consumer<SummaryWrapper>() {
-                               @Override
-                               public void accept(@NonNull SummaryWrapper apiResponse) throws Exception {
-                                   // do nothing
-//                                   handleResponse(apiResponse);
-                               }
-                           },
-                        new Action() {
-                            @Override
-                            public void run() throws Exception {
-                                rangeFetch(AppFinder.getInstance().min(), AppFinder.getInstance().max());
-                            }
-                        });
+        fetchSavedModel();
+        appFinder.setScopeHelper(new ScopeHelperImpl(getApplicationContext()));
+        appFinder.subscribe(seekingRefresher, seekingFinal);
     }
 
     @Override
@@ -111,25 +112,15 @@ public class MainActivity extends FragmentActivity {
         super.onDestroy();
 
         hospitalAdapter.setOnItemClickListener(null);
-        recyclerView.removeOnScrollListener(recyclerViewOnScrollListener);
     }
 
     private void rangeFetch(int min, int max) {
         Log.e(TAG, "rangeFetch fetching app: " + min + " - " + max);
         Observable.range(min, max)
-                .flatMap(new Function<Integer, ObservableSource<SummaryWrapper>>() {
-                    @Override
-                    public ObservableSource<SummaryWrapper> apply(@NonNull Integer appId) throws Exception {
-                        return App.getRestClient().getServiceInstance().fetchTogoHome(appId);
-                    }
-                })
+                .filter(seekCacheChecker)
+                .flatMap(appId2FirstPageMapper)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<SummaryWrapper>() {
-                    @Override
-                    public void accept(@NonNull SummaryWrapper apiResponse) throws Exception {
-                        handleResponse(apiResponse);
-                    }
-                });
+                .subscribe(appFirstPageConsumer);
     }
 
 
@@ -141,6 +132,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         hospitalAdapter.add(model);
+        saveModel(model);
         recyclerView.scrollToPosition(hospitalAdapter.getItemCount() - 1);
     }
 
@@ -166,7 +158,16 @@ public class MainActivity extends FragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void scrollToTop(){
-        recyclerView.scrollToPosition(0);
+    private void fetchSavedModel() {
+        List allSavedModel = querySavedModelFromLocalDb();
+        hospitalAdapter.addAll(allSavedModel);
+    }
+
+    private List<PatientFirstPageModel> querySavedModelFromLocalDb() {
+        return new ArrayList<>();
+    }
+
+    private void saveModel(PatientFirstPageModel model) {
+        // save model to local db.
     }
 }
