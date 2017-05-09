@@ -22,6 +22,6 @@ public class ScopeHelperImpl implements AppFinder.ScopeHelper {
 
     @Override
     public void saveLastIndex(int id) {
-        MaxAppIdPreference.saveLastIndex(context, id);
+//        MaxAppIdPreference.saveLastIndex(context, id);
     }
 }

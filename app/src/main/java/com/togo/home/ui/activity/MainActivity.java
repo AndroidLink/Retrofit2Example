@@ -2,8 +2,8 @@ package com.togo.home.ui.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,7 +37,7 @@ public class MainActivity extends FragmentActivity {
     RecyclerView recyclerView;
 
     private HospitalAdapter hospitalAdapter;
-    private StaggeredGridLayoutManager layoutManager;
+    private LinearLayoutManager layoutManager;
 
     /// AppFinder helper class region
     /// Singleton instance, subscribe with two objects: 1. a consumer, with the name seekingRefresher, to
@@ -95,7 +95,8 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+//        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
         recyclerView.setLayoutManager(layoutManager);
         hospitalAdapter = new HospitalAdapter(this);

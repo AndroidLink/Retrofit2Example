@@ -13,10 +13,10 @@
 
         <TextView
             android:id="@+id/displayName"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/darker_gray"
-            android:layout_alignBottom="@+id/coverPhoto"
+            android:layout_below="@+id/coverPhoto"
             android:layout_marginLeft="10dp"
             android:textSize="18sp"
             android:text="Name"/>
