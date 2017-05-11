@@ -1,16 +1,14 @@
-package com.togo.home.data.remote;
+package com.togo.home.data.retrofit;
 
-import com.togo.home.BuildConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.togo.home.BuildConfig;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-
-import static com.togo.home.data.remote.TogoService.BASE_URL;
 
 /**
  * Created by yangfeng on 17-3-30.
@@ -49,7 +47,7 @@ public class ServiceGenerator
                 .build();
 
         retrofitBuilder.client(modifiedOkHttpClient);
-        retrofitBuilder.baseUrl(BASE_URL);
+        retrofitBuilder.baseUrl(TogoService.BASE_URL);
 
         Retrofit retrofit = retrofitBuilder.build();
         apiService = retrofit.create(TogoService.class);

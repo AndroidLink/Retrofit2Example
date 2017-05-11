@@ -1,4 +1,4 @@
-package com.togo.home.data.remote;
+package com.togo.home.data.retrofit;
 
 /**
  * Created by yangfeng on 17-3-27.

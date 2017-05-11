@@ -1,4 +1,4 @@
-package com.togo.home.data.remote;
+package com.togo.home.data.retrofit;
 
 import com.togo.home.data.model.SummaryWrapper;
 

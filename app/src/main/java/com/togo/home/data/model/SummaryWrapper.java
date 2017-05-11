@@ -1,6 +1,6 @@
 package com.togo.home.data.model;
 
-import com.togo.home.data.remote.response.PatientFirstPageModel;
+import com.togo.home.data.retrofit.response.PatientFirstPageModel;
 
 /**
  * Created by etiennelawlor on 3/4/17.

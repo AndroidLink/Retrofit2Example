@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.togo.home.R;
-import com.togo.home.data.remote.response.PatientFirstPageModel;
+import com.togo.home.data.retrofit.response.PatientFirstPageModel;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

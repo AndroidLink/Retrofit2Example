@@ -1,4 +1,4 @@
-package com.togo.home.data.remote.response;
+package com.togo.home.data.retrofit.response;
 
 import android.text.TextUtils;
 

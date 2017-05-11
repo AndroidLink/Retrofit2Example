@@ -2,7 +2,7 @@ package com.togo.home.ui.app;
 
 import android.app.Application;
 
-import com.togo.home.data.remote.ServiceGenerator;
+import com.togo.home.data.retrofit.ServiceGenerator;
 
 public class App extends Application
 {

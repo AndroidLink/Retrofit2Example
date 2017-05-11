@@ -3,8 +3,8 @@ package com.togo.home.ui.util;
 import android.util.Log;
 
 import com.togo.home.data.model.SummaryWrapper;
-import com.togo.home.data.remote.TogoService;
-import com.togo.home.data.remote.response.PatientFirstPageModel;
+import com.togo.home.data.retrofit.TogoService;
+import com.togo.home.data.retrofit.response.PatientFirstPageModel;
 import com.togo.home.ui.app.App;
 
 import java.util.HashSet;

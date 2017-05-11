@@ -1,4 +1,4 @@
-package com.togo.home.data.remote;
+package com.togo.home.data.retrofit;
 
 import java.io.IOException;
 

@@ -10,11 +10,13 @@ import android.view.MenuItem;
 
 import com.togo.home.R;
 import com.togo.home.data.model.SummaryWrapper;
-import com.togo.home.data.remote.response.PatientFirstPageModel;
+import com.togo.home.data.retrofit.response.PatientFirstPageModel;
+import com.togo.home.data.source.PagesRepository;
+import com.togo.home.data.source.local.PagesLocalDataSource;
+import com.togo.home.data.source.remote.PagesRemoteDataSource;
 import com.togo.home.ui.app.App;
 import com.togo.home.ui.util.AppFinder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -23,6 +25,8 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -44,6 +48,12 @@ public class MainActivity extends FragmentActivity {
     /// listen for app info refreshing while seeking the maximize ID. 2. an action, with the name
     /// seekingFinal, to listen for the notification of seeking complete.
     private final AppFinder appFinder = AppFinder.getInstance();
+
+    @NonNull
+    private PagesRepository packagesRepository;
+
+    @NonNull
+    private CompositeDisposable compositeDisposable;
 
     private final Consumer seekingRefresher = new Consumer<SummaryWrapper>() {
         @Override
@@ -95,6 +105,10 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        compositeDisposable = new CompositeDisposable();
+        packagesRepository = PagesRepository.getInstance(PagesRemoteDataSource.getInstance(),
+                PagesLocalDataSource.getInstance(getApplicationContext()));
+
 //        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
@@ -104,24 +118,25 @@ public class MainActivity extends FragmentActivity {
         recyclerView.setAdapter(hospitalAdapter);
 
         fetchSavedModel();
-        appFinder.setScopeHelper(new ScopeHelperImpl(getApplicationContext()));
-        appFinder.subscribe(seekingRefresher, seekingFinal);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
+        compositeDisposable.clear();
         hospitalAdapter.setOnItemClickListener(null);
     }
 
     private void rangeFetch(int min, int max) {
         Log.e(TAG, "rangeFetch fetching app: " + min + " - " + max);
-        Observable.range(min, max)
+        Disposable disposable = Observable.range(min, max)
                 .filter(seekCacheChecker)
                 .flatMap(appId2FirstPageMapper)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(appFirstPageConsumer);
+
+        compositeDisposable.add(disposable);
     }
 
 
@@ -160,15 +175,24 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void fetchSavedModel() {
-        List allSavedModel = querySavedModelFromLocalDb();
-        hospitalAdapter.addAll(allSavedModel);
-    }
-
-    private List<PatientFirstPageModel> querySavedModelFromLocalDb() {
-        return new ArrayList<>();
+        Disposable disposable = packagesRepository.getFirstPageModels()
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<PatientFirstPageModel>>() {
+                               @Override
+                               public void accept(@NonNull List<PatientFirstPageModel> packages) throws Exception {
+                                   if (packages.isEmpty()) {
+                                       appFinder.setScopeHelper(new ScopeHelperImpl(getApplicationContext()));
+                                       appFinder.subscribe(seekingRefresher, seekingFinal);
+                                   } else {
+                                       hospitalAdapter.addAll(packages);
+                                   }
+                               }
+                           });
+        compositeDisposable.add(disposable);
     }
 
     private void saveModel(PatientFirstPageModel model) {
         // save model to local db.
+        packagesRepository.saveFirstPageModel(model);
     }
 }
