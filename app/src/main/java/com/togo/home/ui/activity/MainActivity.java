@@ -117,6 +117,12 @@ public class MainActivity extends FragmentActivity {
 
         recyclerView.setAdapter(hospitalAdapter);
 
+        packagesRepository.refreshFirstPageModels();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         fetchSavedModel();
     }
 
@@ -148,6 +154,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         hospitalAdapter.add(model);
+        updateTitle();
         saveModel(model);
         recyclerView.scrollToPosition(hospitalAdapter.getItemCount() - 1);
     }
@@ -185,10 +192,15 @@ public class MainActivity extends FragmentActivity {
                                        appFinder.subscribe(seekingRefresher, seekingFinal);
                                    } else {
                                        hospitalAdapter.addAll(packages);
+                                       updateTitle();
                                    }
                                }
                            });
         compositeDisposable.add(disposable);
+    }
+
+    private void updateTitle() {
+        setTitle(getString(R.string.display_title, "" + hospitalAdapter.getItemCount()));
     }
 
     private void saveModel(PatientFirstPageModel model) {

@@ -4,4 +4,6 @@
     <string name="app_name">TOGO</string>
     <string name="action_settings">Settings</string>
 
+    <string name="display_title">TOGO(%1$s)</string>
+
 </resources>

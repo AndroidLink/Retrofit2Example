@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import com.togo.home.data.retrofit.response.PatientFirstPageModel;
 import com.togo.home.data.source.PagesDataSource;
 
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -40,7 +41,7 @@ public class PagesRemoteDataSource implements PagesDataSource {
     public Observable<List<PatientFirstPageModel>> getFirstPageModels() {
         // Not required because the {@link PagesRepository} handles the logic
         // of refreshing the packages from all available data source
-        return null;
+        return Observable.just(Collections.<PatientFirstPageModel>emptyList());
     }
 
     @Override

@@ -9,6 +9,7 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
@@ -81,7 +82,13 @@ public class PagesRepository implements PagesDataSource {
                                 }
                             })
                             .toList()
-                            .toObservable();
+                            .toObservable()
+                            .doOnTerminate(new Action() {
+                                @Override
+                                public void run() throws Exception {
+                                    mCacheIsDirty = false;
+                                }
+                            });
                 }
             });
         } else {
