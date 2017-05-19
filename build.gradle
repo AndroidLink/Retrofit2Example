@@ -33,7 +33,7 @@ ext {
     okhttp3Version = '3.6.0'
     leakcanaryVersion = '1.5'
     circleimageviewVersion = '2.1.0'
-    butterknifeVersion = '8.5.1'
+//    butterknifeVersion = '8.5.1'
     timberVersion = '4.5.1'
     recyclerviewAnimatorsVersion = '2.0.0'
     trestleVersion = '0.0.7'
