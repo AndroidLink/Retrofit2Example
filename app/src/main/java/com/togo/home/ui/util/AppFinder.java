@@ -3,9 +3,9 @@ package com.togo.home.ui.util;
 import android.util.Log;
 
 import com.togo.home.data.model.SummaryWrapper;
+import com.togo.home.data.retrofit.ServiceGenerator;
 import com.togo.home.data.retrofit.TogoService;
 import com.togo.home.data.retrofit.response.PatientFirstPageModel;
-import com.togo.home.ui.app.App;
 
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -81,7 +81,7 @@ public class AppFinder {
 
     private AppFinder() {
         // not instance outside
-        togoService = App.getRestClient().getServiceInstance();
+        togoService = ServiceGenerator.getInstance().getServiceInstance();
     }
 
     public void setScopeHelper(ScopeHelper helper) {

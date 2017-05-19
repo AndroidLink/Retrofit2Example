@@ -15,6 +15,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class ServiceGenerator
 {
+    private static ServiceGenerator _instance;
+    public static ServiceGenerator getInstance() {
+        if (null == _instance) {
+            _instance = new ServiceGenerator();
+        }
+        return _instance;
+    }
+
     private TogoService apiService;
 
     public ServiceGenerator()
