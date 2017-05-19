@@ -3,12 +3,9 @@ package com.togo.home.ui.activity
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import butterknife.BindView
-import butterknife.ButterKnife
 import com.togo.home.R
 import com.togo.home.data.model.SummaryWrapper
 import com.togo.home.data.retrofit.ServiceGenerator
@@ -28,11 +25,9 @@ import io.reactivex.functions.Function
 import io.reactivex.functions.Predicate
 import io.reactivex.schedulers.Schedulers
 
+import kotlinx.android.synthetic.main.content_layout.*
 
 class MainActivity : FragmentActivity() {
-
-    @BindView(R.id.rv)
-    internal var recyclerView: RecyclerView? = null
 
     private var hospitalAdapter: HospitalAdapter? = null
     private var layoutManager: LinearLayoutManager? = null
@@ -69,11 +64,9 @@ class MainActivity : FragmentActivity() {
     private val appFirstPageConsumer = Consumer<SummaryWrapper> { apiResponse -> handleResponse(apiResponse) }
     /// Fetch app first page region end
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        ButterKnife.bind(this)
 
         compositeDisposable = CompositeDisposable()
         packagesRepository = PagesRepository.getInstance(PagesRemoteDataSource.getInstance(),
@@ -82,10 +75,10 @@ class MainActivity : FragmentActivity() {
         //        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
-        recyclerView!!.layoutManager = layoutManager
+        rv.layoutManager = layoutManager
         hospitalAdapter = HospitalAdapter(this)
 
-        recyclerView!!.adapter = hospitalAdapter
+        rv.adapter = hospitalAdapter
 
         packagesRepository!!.refreshFirstPageModels()
     }
@@ -121,7 +114,7 @@ class MainActivity : FragmentActivity() {
         hospitalAdapter!!.add(model)
         updateTitle()
         saveModel(model)
-        recyclerView!!.scrollToPosition(hospitalAdapter!!.itemCount - 1)
+        rv.scrollToPosition(hospitalAdapter!!.itemCount - 1)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
