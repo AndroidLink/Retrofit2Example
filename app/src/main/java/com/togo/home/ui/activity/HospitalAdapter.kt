@@ -12,7 +12,7 @@ import com.togo.home.data.retrofit.response.PatientFirstPageModel
 import kotlinx.android.synthetic.main.togo_home_cell.view.*
 
 /**
- * Created by etiennelawlor on 12/17/16.
+ * Created by Yang Feng on 12/17/16.
  */
 
 class HospitalAdapter(context: Context) : BaseAdapter<PatientFirstPageModel>() {
@@ -83,10 +83,10 @@ class HospitalAdapter(context: Context) : BaseAdapter<PatientFirstPageModel>() {
                 Picasso.with(itemView.coverPhoto.context).load(model.coverPhoto).into(itemView.coverPhoto)
             }
 
-            itemView.displayName.setText(model.displayName)
-            itemView.displayName.setText(model.displayName)
-            itemView.emergentLine.setText(model.emergentLine)
-            itemView.serviceLine.setText(model.serviceLine)
+            itemView.displayName.text = model.displayName
+            itemView.displayName.text = model.displayName
+            itemView.emergentLine.text = model.emergentLine
+            itemView.serviceLine.text = model.serviceLine
         }
         // endregion
     }
