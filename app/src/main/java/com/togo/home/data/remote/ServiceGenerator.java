@@ -15,12 +15,10 @@ import static com.togo.home.data.remote.TogoService.BASE_URL;
 /**
  * Created by yangfeng on 17-3-30.
  */
-public class ServiceGenerator
-{
-    private TogoService apiService;
+public class ServiceGenerator {
+    private static TogoService apiService;
 
-    public ServiceGenerator()
-    {
+    private ServiceGenerator() {
         Gson gson = new GsonBuilder()
             .registerTypeAdapterFactory(new ItemTypeAdapterFactory())
             .create();
@@ -55,7 +53,7 @@ public class ServiceGenerator
         apiService = retrofit.create(TogoService.class);
     }
 
-    private static HttpLoggingInterceptor getHttpLoggingInterceptor(){
+    private static HttpLoggingInterceptor getHttpLoggingInterceptor() {
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         if (BuildConfig.DEBUG) {
             httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -65,8 +63,10 @@ public class ServiceGenerator
         return httpLoggingInterceptor;
     }
 
-    public TogoService getApiService()
-    {
+    public static TogoService getApiService() {
+        if (null == apiService) {
+            new ServiceGenerator();
+        }
         return apiService;
     }
 }

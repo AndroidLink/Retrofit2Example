@@ -15,8 +15,8 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.togo.home.R;
 import com.togo.home.data.model.SummaryWrapper;
+import com.togo.home.data.remote.ServiceGenerator;
 import com.togo.home.data.remote.response.PatientFirstPageModel;
-import com.togo.home.ui.app.App;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -74,7 +74,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         ongoingId = appid;
-        disposable = App.getRestClient().getApiService().fetchTogoHome(appid)
+        disposable = ServiceGenerator.getApiService().fetchTogoHome(appid)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .doOnTerminate(new Action() {
                     @Override
