@@ -74,7 +74,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         ongoingId = appid;
-        disposable = App.getRestClient().getWeatherService().fetchTogoHome(appid)
+        disposable = App.getRestClient().getApiService().fetchTogoHome(appid)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .doOnTerminate(new Action() {
                     @Override
