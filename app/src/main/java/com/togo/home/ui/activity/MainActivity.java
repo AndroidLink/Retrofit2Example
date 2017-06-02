@@ -17,6 +17,7 @@ import com.togo.home.R;
 import com.togo.home.data.model.SummaryWrapper;
 import com.togo.home.data.remote.ServiceGenerator;
 import com.togo.home.data.remote.response.PatientFirstPageModel;
+import com.togo.home.support.util.CountingIdlingResourceListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,6 +49,25 @@ public class MainActivity extends FragmentActivity {
 
     private Disposable disposable;
     private int ongoingId = 0;
+
+    /// counting idle region
+    private static CountingIdlingResourceListener sIdlingNotificationListener;
+    public static void setIdlingNotificationListener(CountingIdlingResourceListener idlingNotificationListener) {
+        sIdlingNotificationListener = idlingNotificationListener;
+    }
+
+    private static void countIdleIncrement() {
+        if (sIdlingNotificationListener != null) {
+            sIdlingNotificationListener.increment(); // Notify that our animation resource is busy
+        }
+    }
+
+    private static void countIdleDecrement() {
+        if (sIdlingNotificationListener != null) {
+            sIdlingNotificationListener.decrement(); // Resource is idle again
+        }
+    }
+    /// region end
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -10,17 +10,46 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 12
         versionName "v2.2"
+
+        testInstrumentationRunner "com.togo.home.cucumber.runner.CucumberTestRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            debuggable true
+            buildConfigField "String", "TEST_TAGS", "\"${getTestTags()}\""
         }
     }
 
     packagingOptions {
         exclude 'META-INF/services/javax.annotation.processing.Processor'
     }
+}
+
+// Task to retrieve Cucumber test reports
+// The report path in this task depends on the path used in CucumberTestCase.java under @CucumberOptions
+// The report path for emulator and real device differ depending on read permissions
+// and SD-card presence respectively
+gradle.taskGraph.afterTask { task, TaskState state ->
+    if ((task == connectedAndroidTest) || (task == connectedCheck)) {
+        def reportDir = new File(project.buildDir, "cucumber-reports")
+        if (!reportDir.exists()) {
+            reportDir.mkdirs()
+        }
+        println 'Retrieving Cucumber test report to ' + project.buildDir
+        def processBuilder = new ProcessBuilder(
+                ['adb', 'pull', '/mnt/sdcard/cucumber-reports/', reportDir.getAbsolutePath()])
+        processBuilder.start()
+    }
+}
+
+// Read Cucumber tags from command line like: ./gradlew connectedAndroidTest -Dtags="@login-scenarios,@kitkat"
+def getTestTags() {
+    return project.hasProperty("tags") ? project.getProperties().get("tags") : ""
 }
 
 dependencies {
@@ -45,4 +74,36 @@ dependencies {
 
     compile "io.reactivex.rxjava2:rxjava:$rootProject.rxjava2Version" // RxJava // Should update at some point
     compile "io.reactivex.rxjava2:rxandroid:$rootProject.rxjava2RxandroidVersion" // RxAndroid providing Android Scheduler // Should update at some point
+
+    // Espresso
+    androidTestCompile('com.android.support.test:runner:0.5') {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'recyclerview-v7'
+    }
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2') {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'recyclerview-v7'
+    }
+//    androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.2.2') {
+//        exclude group: 'com.android.support', module: 'support-annotations'
+//        exclude group: 'com.android.support', module: 'support-v4'
+//        exclude group: 'com.android.support', module: 'recyclerview-v7'
+//        exclude group: 'com.android.support', module: 'appcompat-v7'
+//        exclude group: 'com.android.support', module: 'design'
+//    }
+    // Cucumber
+    androidTestCompile('info.cukes:cucumber-android:1.2.5') {
+        exclude module: 'cucumber-jvm-deps'
+    }
+    androidTestCompile('info.cukes:cucumber-picocontainer:1.2.5') {
+        exclude module: 'cucumber-jvm-deps'
+    }
+
+    androidTestCompile 'info.cukes:cucumber-jvm-deps:1.0.3'
+//    androidTestCompile 'info.cukes:cucumber-jvm-deps:1.0.5'
+    // labdaba
+    // Screenshots
+    androidTestCompile 'com.squareup.spoon:spoon-client:1.7.1'
 }
